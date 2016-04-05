@@ -1,0 +1,117 @@
+﻿@model HRMS.Models.EmployeeModel
+
+<script type="text/javascript">
+    function btn_updateonclick() {
+        var deact = document.getElementById("Deactive").checked;
+
+        if (deact) {
+            return confirm("Are you sure to deactive this employee?");
+        }
+    }
+</script>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="Heading">Edit Employee</div>
+    <div class="clear">&nbsp;</div>
+    
+    <div class="Form">
+        <div class="FormLegend" style="width:111px;">
+            Edit Employee
+        </div>
+        @Html.ValidationSummary(true,"", new{@class="text-denger"})
+
+        <div class="FormGroup">
+            <div class="LeftCol15">
+                @Html.LabelFor(model => model.EmpName,"Employee Name", htmlAttributes: new{@class = "control-label"})
+            </div>
+            <div class="RightCol">
+                @Html.TextBoxFor(model => model.EmpName, new {@maxlength = "100", @class = "formcontrol" })
+                @Html.ValidationMessageFor(model => model.EmpName, "", new { @class = "text-denger" })
+            </div>
+        </div>
+
+        <div class="FormGroup">
+            <div class="LeftCol15">
+                @Html.LabelFor(model => model.Email, htmlAttributes: new{@class = "control-label"})
+            </div>
+            <div class="RightCol">
+                @Html.TextBoxFor(model => model.Email, new {@class = "formcontrol"})
+                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-denger" })
+            </div>
+        </div>
+
+        <div class="FormGroup">
+            <div class="LeftCol15">
+                @Html.LabelFor(model => model.State, htmlAttributes: new{@class = "control-label"})
+            </div>
+            <div class="RightCol">
+                @Html.DropDownListFor(model => model.State,new SelectList(@ViewBag.StateList,"Value","Text"), "Select State", new { @class = "formcontrol"})
+                @Html.ValidationMessageFor(model => model.State, "", new { @class = "text-denger" })
+            </div>
+        </div>
+
+        <div class="FormGroup">
+            <div class="LeftCol15">
+                @Html.LabelFor(model => model.City, htmlAttributes: new{@class = "control-label"})
+            </div>
+            <div class="RightCol">
+                @Html.TextBoxFor(model => model.City, new {@maxlength = "100", @class = "formcontrol"})
+                @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-denger" })
+            </div>
+        </div>
+
+        <div class="FormGroup">
+            <div class="LeftCol15">
+                @Html.LabelFor(model => model.ZipCode, htmlAttributes: new{@class = "control-label"})
+            </div>
+            <div class="RightCol">
+                @Html.TextBoxFor(model => model.ZipCode, new {@maxlength = "6", @class = "formcontrol"})
+                @Html.ValidationMessageFor(model => model.ZipCode, "", new { @class = "text-denger" })
+            </div>
+        </div>
+
+        <div class="FormGroup">
+            <div class="LeftCol15">
+                @Html.LabelFor(model => model.Address, htmlAttributes: new{@class = "control-label"})
+            </div>
+            <div class="RightCol">
+                @Html.TextAreaFor(model => model.Address, 4, 2, new { @class = "formcontrol"})
+            </div>
+        </div>
+
+        <div class="FormGroup">
+            <div class="LeftCol15">
+                @Html.LabelFor(model => model.Deactive, htmlAttributes: new{@class = "control-label"})
+            </div>
+            <div class="RightCol">
+                @Html.EditorFor(model => model.Deactive)
+                @Html.ValidationMessageFor(model => model.Deactive)
+            </div>
+        </div>
+
+        <div class="FormGroup">
+            <div class="LeftCol15">&nbsp;</div>  
+            <div class="RightCol">  
+                <input type="submit" value="Update" class="btn btn-default" onclick="return btn_updateonclick();" />
+                <input type="button" value="Back to Employee List" class="btn btn-default" onclick="location.href='@Url.Action("GetAllEmpDetails", "Index")';" />
+            </div>
+        </div>
+
+        <div class="FormGroup">
+            <div class="LeftCol15">&nbsp;</div>  
+            <div class="RightCol">
+                <div style="color:green;">
+                    @ViewBag.Message
+                </div>
+                <div style="color:red;">
+                    @ViewBag.ErrorMessage
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div class="clear">&nbsp;</div>
+}

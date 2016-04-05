@@ -1,0 +1,12 @@
+﻿@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Add Employee</h4>  
+        <div>  
+            @Html.ActionLink("Back to Employee List", "GetAllEmpDetails")  
+        </div>  
+        <hr />
+    </div>
+}

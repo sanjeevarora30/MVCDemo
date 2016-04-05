@@ -1,0 +1,67 @@
+﻿@model IEnumerable<HRMS.Models.EmployeeModel>
+@using GridMvc.Html
+
+<div class="Heading">Employee List</div>
+<div class="clear">&nbsp;</div>
+@using (Html.BeginForm())
+{
+    <div class="Form">
+        <div class="FormLegend" style="width:132px;">
+            Search Employee
+        </div>
+        <div class="FormGroup">
+            <div class="LeftCol10">
+                Status:
+            </div>
+            <div class="RightCol">
+                @{
+        List<SelectListItem> Items = new List<SelectListItem>();
+        Items.Add(new SelectListItem
+        {
+            Text = "Active",
+            Value = "0"
+        });
+        Items.Add(new SelectListItem
+        {
+            Text = "Deactive",
+            Value = "1"
+        });
+                }
+                @Html.DropDownList("cmbStatus", Items, new{@class = "formcontrol-select"})
+            </div>
+        </div>
+        <div class="FormGroup">
+            <div class="LeftCol10">
+                Employee Name:
+            </div>
+            <div class="RightCol">
+                @Html.TextBox("txtEmployee", "", new {@maxlength="100", @class = "formcontrol" })
+            </div>
+        </div>
+        <div class="FormGroup">
+            <div class="LeftCol10">&nbsp;</div>
+            <div class="RightCol">
+                <input type="submit" value="Search" class="btn btn-default" />
+                <input type="button" value="Add New Employee" class="btn btn-default" onclick="location.href='@Url.Action("AddEmployee", "Index")';" />
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div class="clear">&nbsp;</div>
+}
+
+@Html.Grid(Model).Columns(columns => 
+                    {
+                        columns.Add(c => c.EmpId).Titled("Employee Id");
+                        columns.Add(c => c.EmpName).Titled("Employee Name");
+                        columns.Add(c => c.Email).Titled("Email");
+                        columns.Add(c => c.CreatedOn).Titled("Created On");
+                        columns.Add(c => c.ActiveStatus).Titled("Active");
+                        columns.Add(c => c.State).Titled("State");
+                        columns.Add(c => c.City).Titled("City");
+                        columns.Add(c => c.ZipCode).Titled("Zip Code");
+                        columns.Add().Encoded(false).Sanitized(false).RenderValueAs(c => @Html.ActionLink("Edit", "EditEmployee", new { id = c.EmpId }) + " | " + @Html.ActionLink("Salary", "EmployeeSalaryList", new { id = c.EmpId }))
+                            .Titled("Action");
+                    }).WithPaging(3).Sortable(true).SetRowCssClasses(c=> c.EmpId == 1 ? "grid-row1" : "grid-row2")
+
+<meta name="viewport" content="width=device-width" />

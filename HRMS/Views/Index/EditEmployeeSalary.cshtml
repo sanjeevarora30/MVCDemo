@@ -1,0 +1,156 @@
+﻿@model HRMS.Models.EmpSalaryModel
+
+<script type="text/javascript">
+
+    function GetMonth(obj, callFrom) {
+        var SelectYear = $(obj).val();
+        
+        var MonthId="";
+
+        var monArray=document.getElementById("SalMonth").value.split("=");
+        
+        if (SelectYear != "") {
+            $.ajax({
+                url: "/Index/ShowMonth?year=" + SelectYear,
+                type: "Get",
+                success: function (data) {
+                    $('#SalaryMonth').find("option").remove();
+
+                    var opt1 = new Option("Select Month", "");
+                    $('#SalaryMonth').append(opt1);
+
+                    if(callFrom=="load")
+                    {
+                        if(monArray.length==2)
+                        {
+                            MonthId=monArray[1].trim().substring(0, monArray[1].trim().length-2);
+                        }
+                    }
+
+                    for (var iloop = 0; iloop < data.length; iloop++) {
+                        var opt=new Option(data[iloop].Text, data[iloop].Value);
+                        if(MonthId==data[iloop].Value)
+                        {
+                            opt.selected = true;
+                        }
+
+                        $('#SalaryMonth').append(opt);
+                    }                    
+                }
+            });
+        }
+        else
+        {
+            $('#SalaryMonth').find("option").remove();
+
+            var opt2 = new Option("Select Month", "");
+            $('#SalaryMonth').append(opt2);
+        }
+    }
+
+    $(document).ready(function () {
+        var obj1=document.getElementById("SalaryYear");
+
+        GetMonth(obj1,"load");
+    });
+</script>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="Heading">Edit Employee Salary</div>
+    <div class="clear">&nbsp;</div>
+    
+    <div class="Form">
+        <div class="FormLegend" style="width:160px;">
+            Edit Employee Salary
+        </div>
+        <div class="FormGroup">
+            <div class="LeftCol15">
+                <b>Employee Name</b>
+            </div>
+            <div class="RightCol">
+                @{
+                    string EmpName = @ViewBag.EmpName;
+                }
+
+                <b>@Html.Label(EmpName)</b>
+                @Html.HiddenFor(model => model.EmpId)
+                @Html.HiddenFor(model => model.id)
+            </div>
+        </div>
+
+        <div class="FormGroup">
+            <div class="LeftCol15">
+                @Html.LabelFor(model => model.Salary, "Salary", htmlAttributes: new{@class = "control-label"})
+            </div>
+            <div class="RightCol">
+                @Html.TextBoxFor(model => model.Salary, new {@maxlength = "10", @class = "formcontrol" })
+                @Html.ValidationMessageFor(model => model.Salary, "", new { @class = "text-denger" })
+            </div>
+        </div>
+
+        <div class="FormGroup">
+            <div class="LeftCol15">
+                @Html.LabelFor(model => model.SalaryYear, "Year", htmlAttributes: new{@class = "control-label"})
+            </div>
+            <div class="RightCol">
+                @{
+                    int CurrentYear = DateTime.Now.Year;
+                    List<SelectListItem> YearItems = new List<SelectListItem>();
+
+                    for (int iloop = CurrentYear - 5; iloop <= CurrentYear; iloop++)
+                    {
+                        YearItems.Add(new SelectListItem
+                        {
+                            Text=iloop.ToString(),
+                            Value=iloop.ToString()
+                        });
+                    }
+                }
+
+                @Html.DropDownListFor(model => model.SalaryYear, YearItems, "Select Year", new { @class = "formcontrol", onchange = "GetMonth(this, 'change');", })
+                @Html.ValidationMessageFor(model => model.SalaryYear, "", new { @class = "text-denger" })
+            </div>
+        </div>
+
+        <div class="FormGroup">
+            <div class="LeftCol15">
+                @Html.LabelFor(model => model.SalaryMonth, "Month", htmlAttributes: new{@class = "control-label"})
+            </div>
+            <div class="RightCol">
+                @{
+                    List<SelectListItem> MonthItems = new List<SelectListItem>();
+                }
+        
+                @Html.DropDownListFor(model => model.SalaryMonth, MonthItems, "Select Month", new { @class = "formcontrol"})
+                @Html.Hidden("SalMonth", new { @ViewBag.SalMonth })
+                <span id="spnMonth" class="text-denger"></span>
+                @Html.ValidationMessageFor(model => model.SalaryMonth, "", new { @class = "text-denger" })
+            </div>
+        </div>
+
+        <div class="FormGroup">
+            <div class="LeftCol15">&nbsp;</div>  
+            <div class="RightCol">  
+                <input type="submit" value="Save" class="btn btn-default" id="btn_submit" />
+                <input type="button" value="Back to Employee Salary List" class="btn btn-default" onclick="location.href='@Url.Action("EmployeeSalaryList", "Index", new { id = @ViewBag.EmpId })';" />
+            </div>
+        </div>
+
+        <div class="FormGroup">
+            <div class="LeftCol15">&nbsp;</div>  
+            <div class="RightCol">
+                <div style="color:green;">
+                    @ViewBag.Message
+                </div>
+                <div style="color:red;">
+                    @ViewBag.ErrorMessage
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div class="clear">&nbsp;</div>
+}

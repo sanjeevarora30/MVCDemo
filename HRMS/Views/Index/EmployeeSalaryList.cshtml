@@ -1,0 +1,114 @@
+﻿@model IEnumerable<HRMS.Models.EmpSalaryModel>
+@using GridMvc.Html
+
+<script type="text/javascript">
+    function GetMonth(obj) {
+        var SelectYear = $(obj).val();
+
+        if (SelectYear != "") {
+            $.ajax({
+                url: "/Index/ShowMonth?year=" + SelectYear,
+                type: "Get",
+                success: function (data) {
+                    $('#SalaryMonth').find("option").remove();
+
+                    var opt1 = new Option("Select Month", "");
+                    $('#SalaryMonth').append(opt1);
+
+                    for (var iloop = 0; iloop < data.length; iloop++) {
+                        var opt = new Option(data[iloop].Text, data[iloop].Value);
+                        $('#SalaryMonth').append(opt);
+                    }
+                }
+            });
+        }
+        else
+        {
+            $('#SalaryMonth').find("option").remove();
+
+            var opt2 = new Option("Select Month", "");
+            $('#SalaryMonth').append(opt2);
+        }
+    }
+</script>
+
+<div class="Heading">Employee Salary List</div>
+<div class="clear">&nbsp;</div>
+@using (Html.BeginForm())
+{
+    <div class="Form">
+        <div class="FormLegend" style="width:180px;">
+            Search Employee Salary
+        </div>
+        <div class="FormGroup">
+            <div class="LeftCol10">
+                <b>Employee Name:</b>
+            </div>
+            <div class="RightCol">
+                @{
+                    string EmpName = @ViewBag.EmpName;
+                }
+
+                <b>@Html.Label(EmpName)</b>
+            </div>
+        </div>
+        <div class="FormGroup">
+            <div class="LeftCol10">
+                Salary Year:
+            </div>
+            <div class="RightCol">
+                @{
+                    int CurrentYear = DateTime.Now.Year;
+                    List<SelectListItem> YearItems = new List<SelectListItem>();
+
+                    for (int iloop = CurrentYear - 5; iloop <= CurrentYear; iloop++)
+                    {
+                        YearItems.Add(new SelectListItem
+                        {
+                            Text=iloop.ToString(),
+                            Value=iloop.ToString()
+                        });
+                    }
+                }
+
+                @Html.DropDownList("SalaryYear", YearItems, "Select Year", new { @class = "formcontrol", onchange="GetMonth(this);"})
+            </div>
+        </div>
+        <div class="FormGroup">
+            <div class="LeftCol10">
+                Salary Month:
+            </div>
+            <div class="RightCol">
+                @{
+                    List<SelectListItem> MonthItems = new List<SelectListItem>();
+                }
+        
+                @Html.DropDownList("SalaryMonth", MonthItems, "Select Month", new { @class = "formcontrol" })
+                <span id="spnMonth" class="text-denger"></span>
+                @*@Html.ValidationMessageFor(model => model.SalaryMonth, "", new { @class = "text-denger" })*@
+            </div>
+        </div>
+        <div class="FormGroup">
+            <div class="LeftCol10">&nbsp;</div>
+            <div class="RightCol">
+                <input type="submit" value="Search" class="btn btn-default" />
+                <input type="button" value="Add Employee Salary" class="btn btn-default" onclick="location.href='@Url.Action("AddEmployeeSalary", "Index", new { EmpId = @ViewData["EmpId"] })';" />
+                <input type="button" value="Back to Employee List" class="btn btn-default" onclick="location.href='@Url.Action("GetAllEmpDetails", "Index")';" />
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div class="clear">&nbsp;</div>
+}
+
+
+
+@Html.Grid(Model).Columns(columns => 
+                    {
+                        columns.Add(c => c.Salary).Titled("Salary");
+                        columns.Add(c => c.SalaryYear).Titled("Year");
+                        columns.Add(c => c.SalaryMonth).Titled("Month")
+                            .RenderValueAs(c => @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(c.SalaryMonth));
+                        columns.Add().Encoded(false).Sanitized(false).RenderValueAs(c => @Html.ActionLink("Edit", "EditEmployeeSalary", new { id = c.id }) + " | " + @Html.ActionLink("Delete", "DeleteEmployeeSalary", new { id = c.id }, new { onclick = "return confirm('Are you sure to delete this employee salary?');" }))
+                            .Titled("Action");
+                    }).WithPaging(3).Sortable(true)
