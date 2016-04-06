@@ -437,5 +437,43 @@ namespace HRMS.Controllers
 
             return mName;
         }
+
+        public ActionResult DeleteEmployeeSalary(string id)
+        {
+            EmpSalaryModel EmpSal = new EmpSalaryModel();
+            EmpSal.id = Convert.ToInt32(id);
+            EmpSal.EmpId = 0;
+            EmpSal.Salary = 0;
+            EmpSal.SalaryYear = 0;
+            EmpSal.SalaryMonth = 0;
+
+            try
+            {
+                EmpRepository EmpRepo = new EmpRepository();
+                EmpSal = EmpRepo.GetSingleEmployeeSalaryOnId(id);
+
+                if (EmpRepo.EmployeeSalaryAddEdit(EmpSal, "delete"))
+                {
+                    return RedirectToAction("EmployeeSalaryList", new { id = EmpSal.EmpId });
+                }
+
+                ViewBag.Message = "";
+            }
+            catch
+            {
+                return RedirectToAction("GetAllEmpDetails");
+            }
+
+            /*ViewBag.Title = "HRMS - Edit Employee Salary";
+            EmpRepository empRep = new EmpRepository();
+            EmployeeModel emp = empRep.GetSingleEmployeeOnId(EmpSal.EmpId.ToString());
+
+            @ViewBag.EmpName = emp.EmpName + " (#" + emp.EmpId.ToString() + ")";
+            EmpSal = empRep.GetSingleEmployeeSalaryOnId(Convert.ToString(EmpSal.id));
+            @ViewBag.SalMonth = EmpSal.SalaryMonth;
+            @ViewBag.EmpId = emp.EmpId.ToString();
+            return View(EmpSal);*/
+            return View();
+        }
     }
 }
